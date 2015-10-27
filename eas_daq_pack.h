@@ -1,0 +1,122 @@
+//
+// EagleAeroSport
+//
+// B.Davis
+//
+//////////////////
+
+
+#include <string>
+#include <cstdint>
+
+//
+// Conventional Guards
+#ifndef EAS_PACK_H_
+#define EAS_PACK_H_
+
+//
+// Constants
+//
+#define EAS_STR_LEN      24
+
+//
+// easDAQpack definition
+//
+// For EASE of binary store/load
+// Only ANSI C (intrinsic) types used in this class/struct
+// This could certainly be optimized later
+//
+class EasDAQpack {
+
+friend std::ostream &operator << (std::ostream &os,
+			 const EasDAQpack &e);
+
+public:
+//
+// Packet IDentifiers
+//                              
+typedef enum easDAQpackId_e { UNDEF,
+                            TIMESTAMP,  
+                            ACCEL,
+                            BAROTEMP,
+                            GYRO,
+                            STRAINGAUGE,
+                            CLOCK_T,
+                            MPU6050_t,
+                            ADXL345_t,
+                            BMP180_t,
+                            BEYOND_DEV } 
+easDAQpackId_t;
+
+static std::string const EAS_PACKET_STRINGS[];
+
+//
+// Display Types
+//
+typedef enum easDAQ_displaymode_e { RAW,
+                                  SI,
+                                  BASIC,
+                                  NONE }
+easDAQ_dispmode_t;
+
+static easDAQ_dispmode_t active_dispmode;      
+
+//
+// Class Member Data
+//
+private:
+  easDAQpackId_t pack_id;
+  //
+  // Try to Target 12 byte Max for Union Size
+  // for total object/struct size of 16
+  //
+public: // TODO - change access modifier
+  union {
+    clock_t clk_t;
+    struct {
+      unsigned long test;
+    } time;
+    struct {
+      int16_t  accel_x, accel_y, accel_z;
+      int16_t  gyro_x, gyro_y, gyro_z;
+      int16_t  temp;
+    } accelGyro;
+    struct {
+      uint32_t press;
+      uint16_t temp;
+    } barotemp;
+    struct {
+      uint32_t x, y, z;
+    } threeAxis_ui32;
+    struct {
+      signed short x, y, z;
+    } threeAxis_ss16;
+    struct {
+      uint32_t adc_val;
+    } sg;
+  } u;
+     
+  //
+  // Class Member Functions
+  
+  //
+  // Manager Fn
+  EasDAQpack();
+  
+  //
+  // Mutator Fn
+  void blank();
+  int setID(easDAQpackId_t id);
+  int setClockT(clock_t clk);
+
+  //
+  // Utility Fn
+  int outToFile(std::ofstream &);
+  int outToConsole();
+                          
+}; // class
+
+std::ostream &operator << (std::ostream &os,
+			 const EasDAQpack &e);
+
+#endif
