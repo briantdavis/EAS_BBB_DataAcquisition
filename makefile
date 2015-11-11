@@ -14,6 +14,7 @@ OBJS =  \
   bmp180.o \
   ADXL345Accelerometer.o \
   pca9544mux.o \
+  hscPress.o \
   mpu6050AccelGyro.o \
   libs/tc/tinycon.o
 

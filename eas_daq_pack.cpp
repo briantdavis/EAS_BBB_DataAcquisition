@@ -111,11 +111,28 @@ switch (e.pack_id)
       os << " Gyro ( " << std::dec << e.u.accelGyro.gyro_x << ", " <<
           e.u.accelGyro.gyro_y << ", " << e.u.accelGyro.gyro_z << ")";
           
-      os << " Temp = " << std::dec << e.u.accelGyro.temp;          
-          
+      os << " Temp = " << std::dec << e.u.accelGyro.temp;
     }
-    
-    break;         
+    break;
+      
+    case EasDAQpack :: HSC_PRESS_t:
+      os << "HSC Pressure";
+      switch (e.u.hsc_press.status)
+      {
+        case 0x3:
+          os << " Fault";
+          break;
+        case 0x0:
+          os << " = " << e.u.hsc_press.bridge_data << " Temp = " << e.u.hsc_press.temperature_data;
+          break;
+        case 0x1:
+           os << " Cmd Mode";
+          break;
+        case 0x2:
+           os << " Repeat Data";
+          break;
+      }
+      break;               
     
   default:
     os << "Unknown Packet Ptype = " << e.pack_id;

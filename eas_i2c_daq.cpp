@@ -40,6 +40,7 @@
 #include "bmp180.h"
 #include "pca9544mux.h"
 #include "mpu6050AccelGyro.h"
+#include "hscPress.h"  
 
 // -------------------------------------------
 //
@@ -47,9 +48,9 @@
 //
 // Application / DAQ
 //
-#define ITTER_LOOP_PAUSE     1E4
+#define ITTER_LOOP_PAUSE     1E5
 #define MIN_ILOOP            500
-#define DISP_INTERVAL        100
+#define DISP_INTERVAL        1
 
 //
 // I2C Space
@@ -100,14 +101,22 @@ int main(int argc, char* argv[])
   //
   // I2C TWO
   PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
+  
   i2cMuxNum1.selectChan(PCA9544Mux :: CH_0);
   ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
+  HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR);
+  
+  /*
   ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
   MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
+
+  i2cMuxNum1.selectChan(PCA9544Mux :: CH_2);
+  ADXL345Accelerometer accelNum4(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
 
   i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
   ADXL345Accelerometer accelNum5(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
   ADXL345Accelerometer accelNum6(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
+  */
 
   std::ofstream logFileStream;
     //----------------------------
@@ -195,11 +204,21 @@ int main(int argc, char* argv[])
     i2cMuxNum1.selectChan(PCA9544Mux :: CH_0);
     
     //
+    // HSC Pressure Sensor
+    //
+    pressNum1.updatePressTemp();
+    curPack[pack_i].blank();
+    pressNum1.fillEASpack(curPack[pack_i++]);
+    
+    //
     // Read from ADXL345 Num 1
     //
     accelNum1.updateAccelData();
     curPack[pack_i].blank();
     accelNum1.fillEASpack(curPack[pack_i++]);
+    
+    
+    /*
     
     //
     // Read from ADXL345 Num 2
@@ -215,7 +234,18 @@ int main(int argc, char* argv[])
     curPack[pack_i].blank();
     accGyrNum3.fillEASpack(curPack[pack_i++]);
     
-   
+    
+    //
+    // Select 02
+    i2cMuxNum1.selectChan(PCA9544Mux :: CH_2); 
+    
+    //
+    // Read from ADXL345 Num 4
+    //
+    accelNum4.updateAccelData();
+    curPack[pack_i].blank();
+    accelNum4.fillEASpack(curPack[pack_i++]);
+    
     //
     // Select 03
     i2cMuxNum1.selectChan(PCA9544Mux :: CH_3); 
@@ -233,6 +263,7 @@ int main(int argc, char* argv[])
     accelNum6.updateAccelData();
     curPack[pack_i].blank();
     accelNum6.fillEASpack(curPack[pack_i++]);
+    */
     
  
     //
@@ -242,6 +273,7 @@ int main(int argc, char* argv[])
       for (int i = 0; i < pack_i ; i++)
         curPack[i].outToFile(logFileStream);
     }
+    
     //
     // Display Data once every DISP_INTERVAL
     //
@@ -251,7 +283,7 @@ int main(int argc, char* argv[])
        {
          std::cout << curPack[i] << std::endl;
        }
-   }
+    }
       
     // Pause 
     if (sv->iLoopPause != MIN_ILOOP)

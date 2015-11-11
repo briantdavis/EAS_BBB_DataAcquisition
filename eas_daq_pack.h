@@ -45,6 +45,7 @@ typedef enum easDAQpackId_e { UNDEF,
                             MPU6050_t,
                             ADXL345_t,
                             BMP180_t,
+                            HSC_PRESS_t,
                             BEYOND_DEV } 
 easDAQpackId_t;
 
@@ -91,6 +92,11 @@ public: // TODO - change access modifier
     struct {
       signed short x, y, z;
     } threeAxis_ss16;
+    struct {
+    uint8_t status;             // 2 bit
+    uint16_t bridge_data;       // 14 bit
+    uint16_t temperature_data;  // 11 bit
+    } hsc_press;
     struct {
       uint32_t adc_val;
     } sg;
