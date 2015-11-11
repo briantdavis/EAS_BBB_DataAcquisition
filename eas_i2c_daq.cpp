@@ -47,8 +47,9 @@
 //
 // Application / DAQ
 //
-#define ITTER_LOOP_PAUSE     1E6
-#define MIN_ILOOPPERIOD      500
+#define ITTER_LOOP_PAUSE     1E4
+#define MIN_ILOOP            500
+#define DISP_INTERVAL        100
 
 //
 // I2C Space
@@ -64,9 +65,7 @@
 
 typedef struct shared_vars {
   bool gDone;
-  bool gAccelEnabled;
-  bool gPressEnabled;
-  bool gTempEnabled;
+  bool gDispEnabled;
   bool gLogFileEnabled;
   unsigned int iLoopPause;
 } shared_vars_t;
@@ -94,21 +93,22 @@ volatile static shared_vars_t *sv;
 //
 int main(int argc, char* argv[])
 {
+  //
+  // I2C ONE
+  bmp180 baroSen(I2C_HW1_BUS_NUM);
+
+  //
+  // I2C TWO
   PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
   i2cMuxNum1.selectChan(PCA9544Mux :: CH_0);
   ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
   ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
   MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
-  //i2cMuxNum1.selectChan(PCA9544Mux :: CH_1);
-  //ADXL345Accelerometer accelNum3(I2C_HW1_BUS_NUM, ADXL345_SDO_H_ADDR);
-  //ADXL345Accelerometer accelNum4(I2C_HW1_BUS_NUM, ADXL345_SDO_L_ADDR);
-  i2cMuxNum1.selectChan(PCA9544Mux :: CH_2);
+
+  i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
   ADXL345Accelerometer accelNum5(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
   ADXL345Accelerometer accelNum6(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
-  //i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
-  //ADXL345Accelerometer accelNum7(I2C_HW1_BUS_NUM, ADXL345_SDO_H_ADDR);
-  //ADXL345Accelerometer accelNum8(I2C_HW1_BUS_NUM, ADXL345_SDO_L_ADDR);
-  bmp180 baroSen(I2C_HW1_BUS_NUM);
+
   std::ofstream logFileStream;
     //----------------------------
   //
@@ -117,9 +117,7 @@ int main(int argc, char* argv[])
   sv = (shared_vars_t *) mmap(NULL, sizeof(shared_vars_t), PROT_READ | PROT_WRITE, 
                              MAP_SHARED | MAP_ANONYMOUS, -1, 0);
   sv->gDone = false;
-  sv->gAccelEnabled = true;
-  sv->gPressEnabled = true;
-  sv->gTempEnabled = true;
+  sv->gDispEnabled = true;
   sv->gLogFileEnabled = true;
   sv->iLoopPause = ITTER_LOOP_PAUSE;
 
@@ -171,157 +169,95 @@ int main(int argc, char* argv[])
   //
   while (!sv->gDone)
   {
-    EasDAQpack curPack;    
-    //------------------------    
+    clock_t t;
+    EasDAQpack curPack[20];
+    int pack_i = 0;
+    static unsigned int frc;    
+    //------------------------
     //
-    // Pressure & Temperature
-    //
-    baroSen.updateRawPressTemp();
-    curPack.blank();
-    baroSen.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "BaroTemp : " << curPack << std::endl;
+    // Timestamp
+    t = clock();
+    curPack[pack_i].blank();
+    curPack[pack_i++].setClockT(t);
+    
+    if (frc % 100 == 0)
+    {    
+     //
+     // Pressure & Temperature
+     //
+     baroSen.updateRawPressTemp();
+     curPack[pack_i].blank();
+     baroSen.fillEASpack(curPack[pack_i++]);
+    }
     
     //
     // Select 00
     i2cMuxNum1.selectChan(PCA9544Mux :: CH_0);
-    // std::cout << "Selecting Channel 0" << std::endl;
     
     //
     // Read from ADXL345 Num 1
     //
     accelNum1.updateAccelData();
-    curPack.blank();
-    accelNum1.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 1 : " << curPack << std::endl; 
-      
+    curPack[pack_i].blank();
+    accelNum1.fillEASpack(curPack[pack_i++]);
     
     //
     // Read from ADXL345 Num 2
     //
     accelNum2.updateAccelData();
-    curPack.blank();
-    accelNum2.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 2 : " << curPack << std::endl;
+    curPack[pack_i].blank();
+    accelNum2.fillEASpack(curPack[pack_i++]);
       
     //
     // Read from MPU6050 Num 3
     //
     accGyrNum3.updateAccelGyroTempData();
-    curPack.blank();
-    accGyrNum3.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 3 : " << curPack << std::endl;
-      
-      /*
-    //
-    // Select 01
-    i2cMuxNum1.selectChan(PCA9544Mux :: CH_1);
-    std::cout << "Selecting Channel 1" << std::endl;    
-    //
-    // Read from ADXL345 Num 3
-    //
-    accelNum3.updateAccelData();
-    curPack.blank();
-    accelNum3.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 3 : " << curPack << std::endl; 
-      
+    curPack[pack_i].blank();
+    accGyrNum3.fillEASpack(curPack[pack_i++]);
     
-    //
-    // Read from ADXL345 Num 4
-    //
-    accelNum4.updateAccelData();
-    curPack.blank();
-    accelNum4.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 4 : " << curPack << std::endl;
-      */
    
     //
-    // Select 02
-    i2cMuxNum1.selectChan(PCA9544Mux :: CH_2);
-    // std::cout << "Selecting Channel 2" << std::endl;  
+    // Select 03
+    i2cMuxNum1.selectChan(PCA9544Mux :: CH_3); 
     
     //
     // Read from ADXL345 Num 5
     //
     accelNum5.updateAccelData();
-    curPack.blank();
-    accelNum5.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 5 : " << curPack << std::endl; 
-      
-    
+    curPack[pack_i].blank();
+    accelNum5.fillEASpack(curPack[pack_i++]);
+          
     //
     // Read from ADXL345 Num 6
     //
     accelNum6.updateAccelData();
-    curPack.blank();
-    accelNum6.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 6 : " << curPack << std::endl;
-      /*
-      //
-    // Select 03
-    i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
-        std::cout << "Selecting Channel 3" << std::endl;  
+    curPack[pack_i].blank();
+    accelNum6.fillEASpack(curPack[pack_i++]);
     
-    //
-    // Read from ADXL345 Num 5
-    //
-    accelNum7.updateAccelData();
-    curPack.blank();
-    accelNum7.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 7 : " << curPack << std::endl; 
-      
-    
-    //
-    // Read from ADXL345 Num 6
-    //
-    accelNum8.updateAccelData();
-    curPack.blank();
-    accelNum8.fillEASpack(curPack);
-    if (logFileStream.good())
-      curPack.outToFile(logFileStream);
-    if (sv->gAccelEnabled)
-      std::cout << "Num 8 : " << curPack << std::endl;
-      */
  
-      
-    // Pause 
-    usleep(sv->iLoopPause);
+    //
+    // Log Data 
     if (logFileStream.good())
     {
-      clock_t t;
-      t = clock();
-      curPack.blank();
-      curPack.setClockT(t);
-      curPack.outToFile(logFileStream);
-      std::cout << curPack << std::endl << std::endl;
+      for (int i = 0; i < pack_i ; i++)
+        curPack[i].outToFile(logFileStream);
     }
-          
+    //
+    // Display Data once every DISP_INTERVAL
+    //
+    if ((sv->gDispEnabled) && ((frc % DISP_INTERVAL) == 0))
+    {
+       for (int i = 0; i < pack_i ; i++)
+       {
+         std::cout << curPack[i] << std::endl;
+       }
+   }
+      
+    // Pause 
+    if (sv->iLoopPause != MIN_ILOOP)
+      usleep(sv->iLoopPause);
+    
+    frc++;
   } // while
   
   //
