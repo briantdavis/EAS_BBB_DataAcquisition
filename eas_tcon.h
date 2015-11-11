@@ -45,19 +45,19 @@ public:
       sv->gDone = true;
       quit();
       break;
-      
+     /* 
     case 'a':
       sv->gAccelEnabled = !(sv->gAccelEnabled);
       break;
-      
-    case 't':
-      sv->gTempEnabled = !(sv->gTempEnabled);
+      */
+    case 'd':
+      sv->gDispEnabled = !(sv->gDispEnabled);
       break;
-      
+      /*
     case 'p':
       sv->gPressEnabled = !(sv->gPressEnabled);
       break;
-      
+      */
     //
     // Increase Speed
     case '+':
@@ -65,8 +65,8 @@ public:
         unsigned int new_period;
         //---------------------
         new_period = (sv->iLoopPause / 2);
-        if (new_period < MIN_ILOOPPERIOD)
-          new_period = MIN_ILOOPPERIOD;
+        if (new_period < MIN_ILOOP)
+          new_period = MIN_ILOOP;
         sv->iLoopPause = new_period;
         std::cout << "New Period = " << ((float)new_period/1E6) << std::endl;
         usleep(1.5E6);
@@ -79,8 +79,8 @@ public:
         unsigned int new_period;
         //---------------------
         new_period = (sv->iLoopPause * 2);
-        if (new_period < MIN_ILOOPPERIOD)
-          new_period = MIN_ILOOPPERIOD;
+        if (new_period < MIN_ILOOP)
+          new_period = MIN_ILOOP;
         sv->iLoopPause = new_period;
         std::cout << "New Period = " << ((float)new_period/1E6) << std::endl;
         usleep(1.5E6);

@@ -29,7 +29,6 @@ public:
  
 
  	PCA9544Mux(int, int);
-	//int initAccelerometer();
  	virtual ~PCA9544Mux();
   
   //

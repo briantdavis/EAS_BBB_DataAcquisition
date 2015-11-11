@@ -5,7 +5,7 @@
 # B.Davis
 #
 # Here is a simple Make Macro.
-LINK_TARGET = eas_i2c_daq.v2.exe
+LINK_TARGET = beta_test_one.v1.exe
 
 # Here is a Make Macro that uses the backslash to extend to multiple lines.
 OBJS =  \
