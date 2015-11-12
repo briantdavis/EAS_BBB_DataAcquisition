@@ -3,7 +3,7 @@
 ### BEGIN INIT INFO
 # Provides:		EAS RV12 DataAquisition System
 # Required-Start: 	$all
-# Required-Stop:	
+# Required-Stop:
 # Default-Start:	2 3 4 5
 # Default-Stop:		0 1 6
 # Short-Description:	EAS-RV12-Startup Script
@@ -50,6 +50,7 @@ init () {
 }
 
 findAndExecute () {
+### Deprecated ###
 # This is a generic 'search and execute' function so as to avoid a "D.R.Y." infraction. #
 # The function tries to locate and execute the files requested via string input #
 # THIS FUNCTION DOES NOT HANDLE ERRORS #
@@ -71,20 +72,20 @@ findAndExecute () {
 }
 
 execute_code () {
-	mkdir /logs
+	mkdir /EAS/logs
 	logging=true
 	bebugging=true
 	delay="2s"
 	log "begin script" "$(date)"
-	findAndExecute "EAS-RV12-Startup-Leds.sh" "Enable_third_i2c.sh"
+	init "/EAS/boot/EAS-RV12-Init/EAS-RV12-Startup-Leds.sh" "/EAS/boot/Enable_third_i2c.sh"
 	log "end script" "$(date)"
 }
 
 kill_code () {
-	findAndExecute "EAS-RV12-Shutdown-Leds.sh"
+	init "/EAS/boot/EAS-RV12-Init/EAS-RV12-Shutdown-Leds.sh"
 }
 
-case "$1" in 
+case "$1" in
 	start)
 		echo -n "Starting EAS-RV12 Data Aquisition System"
 		/usr/sbin/EAS-RV12-Startup.sh start
