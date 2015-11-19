@@ -12,11 +12,11 @@ OBJS =  \
 	eas_i2c_daq.o \
   eas_daq_pack.o \
   bmp180.o \
+  bme280.o \
   ADXL345Accelerometer.o \
   pca9544mux.o \
   hscPress.o \
-  mpu6050AccelGyro.o \
-  libs/tc/tinycon.o
+  mpu6050AccelGyro.o
 
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
@@ -51,13 +51,13 @@ clean :
 # $@ expands to the rule's target, in this case "test_me.exe".
 # $^ expands to the rule's dependencies, in this case the three files
 # main.o, test1.o, and  test2.o.
-$(LINK_TARGET) : $(OBJS)
+$(LINK_TARGET) : $(OBJS) ./libs/tc/tinycon.o
 	g++ -g -Wall -o $@ $^
 
 
  #
  # Specific Rules
-/libs/tc/tinycon.o : /libs/tc/tinycon.cpp
+./libs/tc/tinycon.o : ./libs/tc/tinycon.cpp
   g++ -g -std=c++0x -o $@ -c $<
   
 # Here is a Pattern Rule, often used for compile-line.

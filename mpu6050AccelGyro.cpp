@@ -38,7 +38,7 @@ void MPU6050AccelGyro :: blank() {
 
 int MPU6050AccelGyro :: init_device() {
   unsigned char rxBuffer[16];		// receive buffer
-	unsigned char txBuffer[1];		// transmit buffer
+	unsigned char txBuffer[4];		// transmit buffer
   unsigned char reg_val;
 
   //

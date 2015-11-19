@@ -8,10 +8,12 @@ bmp180.h
 
 #include "eas_daq_pack.h"
 
-//Wird benötigt um eine "doppel-definierung"
-//zu verhindern
-#ifndef bmp180_H
-#define bmp180_H
+//
+// Standard Guards
+#ifndef bmp180_H_
+#define bmp180_H_
+
+#define BMP_180_ADDR	      0x77
 
 //mode = 0 -> ulltralow
 #define bmp_mode 0

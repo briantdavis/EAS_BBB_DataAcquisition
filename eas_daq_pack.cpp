@@ -114,7 +114,12 @@ switch (e.pack_id)
       os << " Temp = " << std::dec << e.u.accelGyro.temp;
     }
     break;
-      
+
+  case EasDAQpack :: BME280_t:
+    os << "Baro = " << std::hex << e.u.PresTempHum.Press << "\tTemp = " <<
+      e.u.PresTempHum.Temp << "\tHumid = " << e.u.PresTempHum.Humid;
+    break;  
+
     case EasDAQpack :: HSC_PRESS_t:
       os << "HSC Pressure";
       switch (e.u.hsc_press.status)

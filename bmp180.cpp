@@ -22,8 +22,8 @@ Brian Davis
 #include "bmp180_bosch.h"
 #include "bmp180.h"
 
-#ifndef BMP180_EAS_H_
-#define BMP180_EAS_H_
+// #ifndef BMP180_EAS_H_
+// #define BMP180_EAS_H_
 
 
 #define BMP_180_ADDR	      0x77
@@ -308,7 +308,4 @@ EasDAQpack* bmp180::fillEASpack(EasDAQpack &fillPack)
 }
 
 
-
-
-
-#endif
+// #endif
