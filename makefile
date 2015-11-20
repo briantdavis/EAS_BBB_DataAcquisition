@@ -5,7 +5,7 @@
 # B.Davis
 #
 # Here is a simple Make Macro.
-LINK_TARGET = beta_test_one.v1.exe
+LINK_TARGET = beta_daq_test.v2.exe
 
 # Here is a Make Macro that uses the backslash to extend to multiple lines.
 OBJS =  \
@@ -54,11 +54,10 @@ clean :
 $(LINK_TARGET) : $(OBJS) ./libs/tc/tinycon.o
 	g++ -g -Wall -o $@ $^
 
-
- #
- # Specific Rules
-./libs/tc/tinycon.o : ./libs/tc/tinycon.cpp
-  g++ -g -std=c++0x -o $@ -c $<
+#
+# Specific Rules
+#./libs/tc/tinycon.o : ./libs/tc/tinycon.cpp
+#  g++ -g -std=c++0x -o $@ -c $<
   
 # Here is a Pattern Rule, often used for compile-line.
 # It says how to create a file with a .o suffix, given a file with a .cpp suffix.
