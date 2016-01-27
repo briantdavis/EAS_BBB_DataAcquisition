@@ -82,18 +82,18 @@ bmp180::bmp180(int bus){
 }
 
 /*
-mode wird festgelegt auf 0
-Alle kallibrierungswerte werden ausgelesen
+mode set to 0
+All calibration values read out
 */
 //bool bmp180::begin(){
 
    // @@@ Add a Read of the Calibration Values
   // readCalValues();  
 
-  //Wird für weitere operationen benötigt  
+  // Required for further operations  
   // Wire.begin();
   
-  //kallibrierungs Werte auslesen
+  // Calibration value read
   //ac1 = read16(bmp_ac1);
   //ac2 = read16(bmp_ac2);
   //ac3 = read16(bmp_ac3);
@@ -115,9 +115,9 @@ return 0;
   
 
 /*
-Temperatur aus den ausgelesenen Werten berechnen
-Die Temperatur muss als float wert zurückgegeben werden
-damit eine gleitkommazahl ausgegeben werden kann
+Calculates temperature from selected raw values.
+Raw values must be floating-point in order for the 
+calculation of floating-point temperatures.
 */
 float bmp180::readTemp(){
   int32_t ut,b5;
@@ -128,8 +128,8 @@ float bmp180::readTemp(){
   //();
   
   /*
-  Berechnug der realen Temperatur in *C
-  Berechnungen aus dem Datenblatt ausgelesen
+  Calculation rate of temperatures in Celsius.
+  Data sheet read out.
   */
   int32_t x1 = ((ut - (int32_t)ac6) * (int32_t)ac5) >> 15;
   int32_t x2 = ((int32_t)mc << 11) / (x1 + (int32_t)md);
@@ -143,11 +143,10 @@ float bmp180::readTemp(){
 }
 
 /*
-Druck aus den ausgelesenen Werten berechnen
-Der Druck kann als int32_t zurück gegeben werden
-da er un Pascale angezeigt wird.
-(Bei umrechnung in bar muss über einen neunen
-Rückgabetyp nachgedacht werden!)
+Uses selected values to calculate pressure.
+Pressure can be returned as int32_t.
+Pressure could be calculated here in Pascal units
+if a new return type was created.
 */
 int32_t bmp180::readPressure(){
  int32_t ut,up,b3,b5,b6,x1,x2,x3,p;
@@ -161,8 +160,8 @@ int32_t bmp180::readPressure(){
   ut = rawTemp;
   
   /*
-  Berechnung des realen Drucks in Pascale
-  Berechnungen aus dem Datenblatt ausgelesen
+  Calculation of real pressure in Pascals.
+  Read out to data sheet.
   */
   int32_t x11 = ((ut - (int32_t)ac6) * (int32_t)ac5) >> 15;
   int32_t x22 = ((int32_t)mc << 11) / (x11 + (int32_t)md);
