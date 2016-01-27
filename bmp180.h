@@ -43,6 +43,7 @@ bzw zu lesen
 #define bmp_pres 0xF6
 
 /*
+This is Meaningless to Me
 Die Klasse bmp180 soll dazu dienen die temperatur
 und den druck zu lesen.
 Die "unkompensierten"-Daten werden für die spätere berechnung
