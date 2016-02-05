@@ -1,6 +1,0 @@
-#! /bin/sh
-
-for i in $(seq 200)
-do
-echo "$0 hello $i" >> /logs/ti.txt
-done
