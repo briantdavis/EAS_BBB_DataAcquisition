@@ -1,19 +1,13 @@
 #! /bin/sh
-# /etc/init.d/EAS-RV12-Startup
-#
-
 # Scipt as follows
-
-### Neccessary Start-up items ###
-
-mkdir /logs
-# This will likely emit an error, ignore it. #
-# This guarentees that the working directory for this file will exist #
-
-# This variable determines whether the crypt will use the log function or not #
-logging=true
-debugging=true
-delay="2s";   ### MUST BE A POSITIVE INTEGER FOLLOWED BY "s" for seconds ###
+### BEGIN INIT INFO
+# Provides:		EAS RV12 DataAquisition System
+# Required-Start: 	$all
+# Required-Stop:	
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	EAS-RV12-Startup Script
+### END INIT INFO
 
 ### Functions ###
 
@@ -76,11 +70,37 @@ findAndExecute () {
 	log "end findAndExecute"
 }
 
-#init "/etc/init.d/testenv/t1" "/etc/init.d/testenv/t2" "/etc/init.d/testenv/t3" "/etc/init.d/testenv/t4" "/etc/init.d/testenv/t5"
+execute_code () {
+	mkdir /logs
+	logging=true
+	bebugging=true
+	delay="2s"
+	log "begin script" "$(date)"
+	findAndExecute "EAS-RV12-Startup-Leds.sh" "Enable_third_i2c.sh"
+	log "end script" "$(date)"
+}
 
-log "begin script" "$(date)"
-### rm /logs/ti.txt   ### DEVELOPMENTAL CODE ###
-findAndExecute "Enable_third_i2c.sh" ### The following is disabled until futher notice: "beta_daq_test.v2.exe" ###
-#findAndExecute "t1" "t2" "t3" "t4" "t5" "t6" "t7" "t8" "t9" "t10"   ### DEVELOPMENTAL CODE ###
-log "end script" "$(date)"
+kill_code () {
+	findAndExecute "EAS-RV12-Shutdown-Leds.sh"
+}
 
+case "$1" in 
+	start)
+		echo -n "Starting EAS-RV12 Data Aquisition System"
+		/usr/sbin/EAS-RV12-Startup.sh start
+		execute_code
+		;;
+	stop)
+		echo -n "Stopping EAS-RV12 Data Aquisition System"
+		/usr/sbin/EAS-RV12-Startup.sh stop
+		kill_code
+		;;
+	restart)
+		echo -n "Restarting EAS-RV12 Data Aquisition System"
+		/usr/sbin/EAS-RV12-Startup.sh restart
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1;
+		;;
+esac
