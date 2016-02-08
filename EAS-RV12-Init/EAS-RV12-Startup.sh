@@ -33,7 +33,7 @@ log () {
 init () {
 # This is a generic initiation function so as to avoid a "D.R.Y." infraction. #
 # The function trys to call the scripts requested via string input. #
-# I personnaly suggest against this function due to possible user error. #
+# I personally suggest against this function due to possible user error. #
 # The function will run all inputted scripts followed by a delay as defined by "delay" #
 	log "beginning init"
 	log "beginning execution loop"
@@ -53,11 +53,11 @@ findAndExecute () {
 # This is a generic 'search and execute' function so as to avoid a "D.R.Y." infraction. #
 # The function tries to locate and execute the files requested via string input #
 # THIS FUNCTION DOES NOT HANDLE ERRORS #
-# I may chage the "init" to activate in the loop to act as an extra delay. #
-	log "begining findAndExecute"
+# I may change the "init" to activate in the loop to act as an extra delay. #
+	log "beginning findAndExecute"
 	log "creating init_paths variable"
 	init_paths=""
-	log "begining execution loop"
+	log "beginning execution loop"
 	for var_findAndExecute in "$@"
 	do
 		log "Finding:" "$var_findAndExecute"
