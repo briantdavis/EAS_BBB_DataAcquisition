@@ -73,7 +73,7 @@ findAndExecute () {
 execute_code () {
 	mkdir /logs
 	logging=true
-	bebugging=true
+	debugging=true
 	delay="2s"
 	log "begin script" "$(date)"
 	findAndExecute "EAS-RV12-Startup-Leds.sh" "Enable_third_i2c.sh"
