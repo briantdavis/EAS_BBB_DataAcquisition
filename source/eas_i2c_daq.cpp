@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
       exit(1);
     }
     //-----
-    strftime(log_name, LOG_NAME_SZ, "./logs/easRV12_%d_%b_%Y_%H_%M_%S.log", 
+    strftime(log_name, LOG_NAME_SZ, "/EAS/logs/easRV12_%d_%b_%Y_%H_%M_%S.log", 
       gmtime(&now));
     logFileStream.open(log_name, std::ofstream::out | std::ofstream::app);
     if (!logFileStream.good())
