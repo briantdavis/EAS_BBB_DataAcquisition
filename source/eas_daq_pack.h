@@ -119,6 +119,7 @@ public: // TODO - change access modifier
   void blank();
   int setID(easDAQpackId_t id);
   int setClockT(clock_t clk);
+  int setClockDual(clock_t, struct timespec);
 
   //
   // Utility Fn

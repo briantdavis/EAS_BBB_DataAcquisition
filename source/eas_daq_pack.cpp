@@ -54,6 +54,15 @@ int EasDAQpack :: setClockT(clock_t clk)
   u.clk_t = clk;
   return 0;
 }
+//-------------------------------------------------
+int EasDAQpack :: setClockDual(clock_t crs, struct timespec pres)
+{
+  pack_id = EasDAQpack :: DUAL_CLOCK_T;
+  // @@@@ Working here TODO @@@@
+  // u.clk_t = clk;
+  return 0;
+}
+
 //---------------------------------------------------
 int EasDAQpack :: outToConsole()
 {
