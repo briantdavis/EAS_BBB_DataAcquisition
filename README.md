@@ -1,7 +1,7 @@
 # Eagle Aero Sport BeagleBone Black
 # Data Acquistion System
 
-This REPO is intended to be extracted into a folder /EAS on the beaglbone black.
+This REPO is intended to be extracted into a folder /EAS on the beaglebone black.
 
 Contains code C++ compiled directly on the BBB, using the debian GCC tool chain.
 
