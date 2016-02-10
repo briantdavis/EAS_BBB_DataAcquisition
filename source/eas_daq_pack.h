@@ -47,13 +47,16 @@ typedef enum easDAQpackId_e { UNDEF,
                             BMP180_t,
                             BME280_t,
                             HSC_PRESS_t,
+                            DUAL_CLOCK_t,
                             BEYOND_DEV } 
 easDAQpackId_t;
 
 typedef union easDAQpackData_u {
     clock_t clk_t;
     struct {
-      unsigned long test;
+      // unsigned long test;
+      clock_t course;
+      struct timespec ns;
     } time;
     struct {
       int16_t  accel_x, accel_y, accel_z;

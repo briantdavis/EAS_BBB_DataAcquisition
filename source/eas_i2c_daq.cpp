@@ -198,8 +198,6 @@ int main(int argc, char* argv[])
     // Timestamp
     t_c = clock();
     clock_gettime(CLOCK_REALTIME, &t_p);
-    curPack[pack_i].blank();
-    curPack[pack_i++].setClockT(t_c);
     curPack[pack_i++].setClockDual(t_c,t_p);
     
     if (frc % 5 == 0)
