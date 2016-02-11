@@ -39,7 +39,7 @@ do
 		down
 		i=0
 	fi
-	sleep 0.5
+	sleep 0.01
 done
 cd $usr1
 echo mmc0 > trigger
