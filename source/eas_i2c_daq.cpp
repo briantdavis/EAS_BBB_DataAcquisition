@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
   }
   
   //
-  // TODO:
+  // @@@ TODO:
   // Read Cal Data from all Sensors & Write to Log-File
   // 
   // located HERE!
@@ -188,16 +188,17 @@ int main(int argc, char* argv[])
   //
   while (!sv->gDone)
   {
-    clock_t t;
+    clock_t t_c;
+    struct timespec t_p; 
     EasDAQpack curPack[20];
     int pack_i = 0;
     static unsigned int frc;    
     //------------------------
     //
     // Timestamp
-    t = clock();
-    curPack[pack_i].blank();
-    curPack[pack_i++].setClockT(t);
+    t_c = clock();
+    clock_gettime(CLOCK_REALTIME, &t_p);
+    curPack[pack_i++].setClockDual(t_c,t_p);
     
     if (frc % 5 == 0)
     {    

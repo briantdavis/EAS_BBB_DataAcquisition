@@ -52,7 +52,7 @@ clean :
 # $^ expands to the rule's dependencies, in this case the three files
 # main.o, test1.o, and  test2.o.
 $(LINK_TARGET) : $(OBJS) ./libs/tc/tinycon.o
-	g++ -g -Wall -o $@ $^
+	g++ -g -Wall -lrt -o $@ $^
 
 #
 # Specific Rules
