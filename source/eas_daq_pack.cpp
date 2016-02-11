@@ -54,6 +54,17 @@ int EasDAQpack :: setClockT(clock_t clk)
   u.clk_t = clk;
   return 0;
 }
+//-------------------------------------------------
+int EasDAQpack :: setClockDual(clock_t crs, struct timespec pres)
+{
+  pack_id = EasDAQpack :: DUAL_CLOCK_t;
+  u.time.course = crs;
+  u.time.ns = pres;
+  // @@@@ Working here TODO @@@@
+  // u.clk_t = clk;
+  return 0;
+}
+
 //---------------------------------------------------
 int EasDAQpack :: outToConsole()
 {
@@ -71,6 +82,11 @@ switch (e.pack_id)
     os << "Time = " << e.u.clk_t;
     break;
     
+  case EasDAQpack :: DUAL_CLOCK_t:
+    os << "Course Time = " << e.u.time.course << "  Precise Time = " <<
+      e.u.time.ns.tv_sec << "." << e.u.time.ns.tv_nsec;
+    break;
+      
   case EasDAQpack :: ACCEL:
   case EasDAQpack :: ADXL345_t:
     if (EasDAQpack :: active_dispmode == EasDAQpack :: RAW)

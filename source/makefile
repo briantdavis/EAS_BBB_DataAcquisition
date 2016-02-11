@@ -5,7 +5,7 @@
 # B.Davis
 #
 # Here is a simple Make Macro.
-LINK_TARGET = beta_daq_test.v2.exe
+LINK_TARGET = /EAS/bin/eas_daq_alpha.v1.exe
 
 # Here is a Make Macro that uses the backslash to extend to multiple lines.
 OBJS =  \
@@ -52,7 +52,7 @@ clean :
 # $^ expands to the rule's dependencies, in this case the three files
 # main.o, test1.o, and  test2.o.
 $(LINK_TARGET) : $(OBJS) ./libs/tc/tinycon.o
-	g++ -g -Wall -o $@ $^
+	g++ -g -Wall -lrt -o $@ $^
 
 #
 # Specific Rules
