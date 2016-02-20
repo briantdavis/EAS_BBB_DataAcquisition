@@ -1,5 +1,5 @@
-# Eagle Aero Sport BeagleBone Black
-# Data Acquistion System
+# EagleAeroSport BeagleBone Black
+# Data Acquisition System
 
 This REPO is intended to be extracted into a folder /EAS on the beaglebone black.
 
