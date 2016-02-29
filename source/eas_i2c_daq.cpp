@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+// #include <unistd.h>  Old Ansi C / linux threads
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -103,6 +103,7 @@ int main(int argc, char* argv[])
   PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
   
   i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+  
   ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
   ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
   BME280 humPress1(I2C_HW2_BUS_NUM, BME280_SDO_L_ADDR);
@@ -165,8 +166,26 @@ int main(int argc, char* argv[])
     std::cout << std::endl << "Log File " << log_name << " opened." << std::endl;
   } // if enabled
 
+
+  //
+  // @@@ TODO:
+  // Autodetect I2C sensors
+  // Read Config file for installed non-I2C sensors
+  // Write insalled sensors list to Log-File
+  // located HERE!
+  
+  
+  //
+  // @@@ TODO:
+  // Read Cal Data from all Sensors & Write to Log-File
+  // located HERE!
+
+
   //
   // Setup TinyCon in Parallel Thread
+  // To accept Input from console
+  // Quit / Increase speed / Decrease speed
+  // Diasble 
   // 
   int tc_pid = fork();
   if (tc_pid == 0)
@@ -176,28 +195,26 @@ int main(int argc, char* argv[])
     std::cout << std::endl << "TinyCom thread ShutDown."<< std::endl;
     return 0;
   }
-  
-  //
-  // TODO:
-  // Read Cal Data from all Sensors & Write to Log-File
-  // 
-  // located HERE!
+
 
   //
-  // Begin Repeated Loop
+  // Begin Repeated DAQ Loop
+  // This will later be MULTI-Threaded
+  // For each unique BUS {I2C1, I2C2, SPI, UART, etc..}
   //
   while (!sv->gDone)
   {
-    clock_t t;
+    clock_t t_c;
+    struct timespec t_p; 
     EasDAQpack curPack[20];
     int pack_i = 0;
     static unsigned int frc;    
     //------------------------
     //
     // Timestamp
-    t = clock();
-    curPack[pack_i].blank();
-    curPack[pack_i++].setClockT(t);
+    t_c = clock();
+    clock_gettime(CLOCK_REALTIME, &t_p);
+    curPack[pack_i++].setClockDual(t_c,t_p);
     
     if (frc % 5 == 0)
     {    
@@ -323,6 +340,8 @@ int main(int argc, char* argv[])
     // Increment FRC
     frc++;
   } // while
+  
+  
   
   //
   // For clean shutdown, make sure child processes close first.

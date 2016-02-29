@@ -47,36 +47,16 @@ typedef enum easDAQpackId_e { UNDEF,
                             BMP180_t,
                             BME280_t,
                             HSC_PRESS_t,
+                            DUAL_CLOCK_t,
                             BEYOND_DEV } 
 easDAQpackId_t;
 
-static std::string const EAS_PACKET_STRINGS[];
-
-//
-// Display Types
-//
-typedef enum easDAQ_displaymode_e { RAW,
-                                  SI,
-                                  BASIC,
-                                  NONE }
-easDAQ_dispmode_t;
-
-static easDAQ_dispmode_t active_dispmode;      
-
-//
-// Class Member Data
-//
-private:
-  easDAQpackId_t pack_id;
-  //
-  // Try to Target 12 byte Max for Union Size
-  // for total object/struct size of 16
-  //
-public: // TODO - change access modifier
-  union {
+typedef union easDAQpackData_u {
     clock_t clk_t;
     struct {
-      unsigned long test;
+      // unsigned long test;
+      clock_t course;
+      struct timespec ns;
     } time;
     struct {
       int16_t  accel_x, accel_y, accel_z;
@@ -105,7 +85,32 @@ public: // TODO - change access modifier
     struct {
       uint32_t adc_val;
     } sg;
-  } u;
+  } easDAQpackData_t;
+
+static std::string const EAS_PACKET_STRINGS[];
+
+//
+// Display Types
+//
+typedef enum easDAQ_displaymode_e { RAW,
+                                  SI,
+                                  BASIC,
+                                  NONE }
+easDAQ_dispmode_t;
+
+static easDAQ_dispmode_t active_dispmode;      
+
+//
+// Class Member Data
+//
+private:
+  easDAQpackId_t pack_id;
+  //
+  // Try to Target 12 byte Max for Union Size
+  // for total object/struct size of 16
+  //
+public: // TODO - change access modifier
+  easDAQpackData_t u;
      
   //
   // Class Member Functions
@@ -119,6 +124,7 @@ public: // TODO - change access modifier
   void blank();
   int setID(easDAQpackId_t id);
   int setClockT(clock_t clk);
+  int setClockDual(clock_t, struct timespec);
 
   //
   // Utility Fn
