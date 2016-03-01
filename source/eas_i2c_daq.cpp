@@ -69,6 +69,7 @@ typedef struct shared_vars {
   bool gDispEnabled;
   bool gLogFileEnabled;
   unsigned int iLoopPause;
+    uint8_t      gNextUniqueID;
 } shared_vars_t;
 
 //
@@ -81,6 +82,7 @@ volatile static shared_vars_t *sv;
 // Prototypes
 //
 
+int block_children_shutdown(int);
 
 //---------------------------------------------------
 // #includes which require sv structure defn
@@ -94,37 +96,10 @@ volatile static shared_vars_t *sv;
 //
 int main(int argc, char* argv[])
 {
-  //
-  // I2C ONE
-  bmp180 baroSen(I2C_HW1_BUS_NUM);
-
-  //
-  // I2C TWO
-  PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
-  
-  i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
-  
-  ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
-  ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
-  BME280 humPress1(I2C_HW2_BUS_NUM, BME280_SDO_L_ADDR);
-  // MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
-  
-  /*  
-  HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR);
-  ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
-
-
-  i2cMuxNum1.selectChan(PCA9544Mux :: CH_2);
-  ADXL345Accelerometer accelNum4(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
-
-  i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
-  ADXL345Accelerometer accelNum5(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
-  ADXL345Accelerometer accelNum6(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
-  */
-
+  uint8_t timeStamp_UID;
   std::ofstream logFileStream;
-    //----------------------------
-  //
+  //----------------------------
+  // ***
   // Set up shared memory space
   //
   sv = (shared_vars_t *) mmap(NULL, sizeof(shared_vars_t), PROT_READ | PROT_WRITE, 
@@ -133,8 +108,42 @@ int main(int argc, char* argv[])
   sv->gDispEnabled = true;
   sv->gLogFileEnabled = true;
   sv->iLoopPause = ITTER_LOOP_PAUSE;
+  sv->gNextUniqueID = 0;
+  timeStamp_UID = (++sv->gNextUniqueID);
+  
+  // ***
+  // Sensor Object creation
+  //
+  // This section will be eliminated when sensor auto-detect
+  // is written & operational
+  //
+  
+  // I2C ONE
+  bmp180 baroSen(I2C_HW1_BUS_NUM, ++sv->gNextUniqueID);
 
   //
+  // I2C TWO
+  PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
+  
+  i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+  
+  ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR, ++sv->gNextUniqueID);
+  ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR, ++sv->gNextUniqueID);
+  BME280 humPress1(I2C_HW2_BUS_NUM, BME280_SDO_L_ADDR, ++sv->gNextUniqueID);
+  // MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
+  /*  
+  HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR);
+  ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
+  i2cMuxNum1.selectChan(PCA9544Mux :: CH_2);
+  ADXL345Accelerometer accelNum4(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
+  i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+  ADXL345Accelerometer accelNum5(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
+  ADXL345Accelerometer accelNum6(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
+  */
+  
+  
+
+  // ***
   // Open Log File
   //
   if (sv->gLogFileEnabled)
@@ -196,7 +205,6 @@ int main(int argc, char* argv[])
     return 0;
   }
 
-
   //
   // Begin Repeated DAQ Loop
   // This will later be MULTI-Threaded
@@ -214,7 +222,7 @@ int main(int argc, char* argv[])
     // Timestamp
     t_c = clock();
     clock_gettime(CLOCK_REALTIME, &t_p);
-    curPack[pack_i++].setClockDual(t_c,t_p);
+    curPack[pack_i++].setClockDual(t_c, t_p, timeStamp_UID);
     
     if (frc % 5 == 0)
     {    
@@ -341,22 +349,9 @@ int main(int argc, char* argv[])
     frc++;
   } // while
   
-  
-  
   //
-  // For clean shutdown, make sure child processes close first.
-  //
-  // http://stackoverflow.com/questions/5057137/c-loop-while-child-is-alive
-  int Stat;
-  // Blocking while()
-  while (waitpid(tc_pid, &Stat, WNOHANG) != tc_pid);
-  if (WIFEXITED(Stat)) {
-    std::cout << "  parent: Child exited with exit code " << WEXITSTATUS(Stat) << std::endl;
-  } else if (WIFSIGNALED(Stat)) {
-    std::cout << "  parent: Child killed with signal " << WTERMSIG(Stat) << std::endl;
-  } else {
-    std::cout << "  parent: Something else happened to child, e.g. STOPPED" << std::endl;
-  }
+  // Parent thread should make sure all children close first
+  block_children_shutdown(tc_pid);
   
   //
   // Close Log File
@@ -374,4 +369,24 @@ int main(int argc, char* argv[])
   return 0;
 } // main
 
-
+// *****************************************************
+// Wait for Children to close
+//
+int block_children_shutdown(int pid0)
+{
+// ***
+  // For clean shutdown, make sure child processes close first.
+  //
+  // http://stackoverflow.com/questions/5057137/c-loop-while-child-is-alive
+  int Stat;
+  // Blocking while()
+  while (waitpid(pid0, &Stat, WNOHANG) != pid0);
+  if (WIFEXITED(Stat)) {
+    std::cout << "  parent: Child exited with exit code " << WEXITSTATUS(Stat) << std::endl;
+  } else if (WIFSIGNALED(Stat)) {
+    std::cout << "  parent: Child killed with signal " << WTERMSIG(Stat) << std::endl;
+  } else {
+    std::cout << "  parent: Something else happened to child, e.g. STOPPED" << std::endl;
+  }
+  return(Stat);
+}

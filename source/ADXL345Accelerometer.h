@@ -40,6 +40,7 @@ class ADXL345Accelerometer {
 
 private:
 	int i2cBus, i2cAddress, i2cHandle;
+  uint8_t uniqueID;
 	char namebuf[MAX_BUS];
 
 	// signed int accelerationX, accelerationY, accelerationZ;
@@ -52,7 +53,7 @@ private:
 public:
   //
   // Manager Fn
-	ADXL345Accelerometer(int bus, int address);
+	ADXL345Accelerometer(int, int, uint8_t = UNSET_UID);
 	int initAccelerometer();
  	virtual ~ADXL345Accelerometer();
  

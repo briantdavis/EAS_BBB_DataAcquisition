@@ -33,9 +33,10 @@ using namespace std;
 //---------------------------------------------------------------------
 //
 //
-ADXL345Accelerometer::ADXL345Accelerometer(int busID, int deviceAddress) {
+ADXL345Accelerometer::ADXL345Accelerometer(int busID, int deviceAddress, uint8_t uniqueID_in) {
 	i2cBus = busID;
 	i2cAddress = deviceAddress;
+  uniqueID = uniqueID_in;
 	//accelerationX = accelerationY = accelerationZ=0;
 	//roll = pitch = 0;
 	rawData_X = rawData_Y = rawData_Z = 0;
@@ -190,9 +191,11 @@ ADXL345Accelerometer::~ADXL345Accelerometer() {
 EasDAQpack* ADXL345Accelerometer::fillEASpack(EasDAQpack &fillPack)
 {
   fillPack.setID(EasDAQpack::ACCEL);
+  fillPack.setUnique(uniqueID);
   fillPack.u.threeAxis_ss16.x = rawData_X;
   fillPack.u.threeAxis_ss16.y = rawData_Y;
   fillPack.u.threeAxis_ss16.z = rawData_Z;
+  // fillPack.u_sensor_id = uniqueID;
   return &fillPack;
 }
 

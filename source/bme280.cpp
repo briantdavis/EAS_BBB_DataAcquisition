@@ -23,12 +23,13 @@ Brian Davis
 
 //
 // Constructor
-BME280::BME280(int bus, int addr) {
+BME280::BME280(int bus, int addr, uint8_t uniqueID_in) {
   #define MAX_BUS 40
   char namebuf[MAX_BUS];
   //-------------------
   blank();
   
+  uniqueID = uniqueID_in;
   i2cBus = bus;
 	snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", i2cBus);
 
@@ -132,9 +133,12 @@ int BME280 :: updateHumidPressTemp() {
 EasDAQpack* BME280::fillEASpack(EasDAQpack &fillPack)
 {
   fillPack.setID(EasDAQpack::BME280_t);
+  fillPack.setUnique(uniqueID);
+  
   fillPack.u.PresTempHum.Press = rawPress;
   fillPack.u.PresTempHum.Temp = rawTemp;
   fillPack.u.PresTempHum.Humid = rawHumid;
+  // fillPack.u_sensor_id = uniqueID;
   
   return &fillPack;
 }

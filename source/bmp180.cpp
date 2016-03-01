@@ -37,8 +37,13 @@ Brian Davis
 		// Example from http://wmrx00.sourceforge.net/Arduino/BMP180-Calcs.pdf
 		// AC1 = 7911; AC2 = -934; AC3 = -14306; AC4 = 31567; AC5 = 25671; AC6 = 18974;
 		// VB1 = 5498; VB2 = 46; MB = -32768; MC = -11075; MD = 2432;
-bmp180::bmp180(int bus){
-    
+bmp180::bmp180(int bus, uint8_t UniqueID_in){
+  
+  UniqueID = UniqueID_in;
+  
+  //
+  // Default Cal values
+  //  
   ac1 = 408;
   ac2 = -72;
   ac3 = -14383;
