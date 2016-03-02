@@ -119,17 +119,17 @@ int main(int argc, char* argv[])
   //
   
   // I2C ONE
-  //  bmp180 baroSen(I2C_HW1_BUS_NUM, ++sv->gNextUniqueID);
-  BME280 humPress1(I2C_HW1_BUS_NUM, BME280_SDO_L_ADDR, ++sv->gNextUniqueID);
+  bmp180 baroSen(I2C_HW1_BUS_NUM, ++sv->gNextUniqueID);
 
   //
   // I2C TWO
   PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
+  
   i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
   
   ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR, ++sv->gNextUniqueID);
   ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR, ++sv->gNextUniqueID);
-  
+  BME280 humPress1(I2C_HW2_BUS_NUM, BME280_SDO_L_ADDR, ++sv->gNextUniqueID);
   // MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
   /*  
   HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR);
@@ -140,6 +140,8 @@ int main(int argc, char* argv[])
   ADXL345Accelerometer accelNum5(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
   ADXL345Accelerometer accelNum6(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
   */
+  
+  
 
   // ***
   // Open Log File
@@ -181,36 +183,12 @@ int main(int argc, char* argv[])
   // Write insalled sensors list to Log-File
   // located HERE!
   
-  humPress1.logPartASensorID(logFileStream, "On Cape");
-  i2cMuxNum1.logPartASensorID(logFileStream);
-  accelNum1.logPartASensorID(logFileStream, "On Proto RH Orientation");
-  accelNum2.logPartASensorID(logFileStream, "On Proto LH Orientation");
-  
-  
-  
   
   //
   // @@@ TODO:
   // Read Cal Data from all Sensors & Write to Log-File
   // located HERE!
 
-
-
-
-  // logFileStream.seekp(2048);
-  
-  while (logFileStream.tellp() < 0x800)
-  {
-    char buf[10] = {0};
-    logFileStream.write(buf,1);
-  }
-  
-  
-  if (!logFileStream.good())
-  {
-     std::cout << std::endl << "LogFile Seek() error."<< std::endl;
-    return 0;
-  }
 
   //
   // Setup TinyCon in Parallel Thread
@@ -226,9 +204,6 @@ int main(int argc, char* argv[])
     std::cout << std::endl << "TinyCom thread ShutDown."<< std::endl;
     return 0;
   }
-
-
-
 
   //
   // Begin Repeated DAQ Loop
@@ -252,15 +227,23 @@ int main(int argc, char* argv[])
     if (frc % 5 == 0)
     {    
      //
-     // Pressure, Humidity  & Temperature
-     //    
-      humPress1.updateHumidPressTemp();
-      humPress1.fillEASpack(curPack[pack_i++]);
+     // Pressure & Temperature
+     //
+     baroSen.updateRawPressTemp();
+     baroSen.fillEASpack(curPack[pack_i++]);
     }
     
     //
     // Select Channel
     i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+    
+    //
+    // HSC Pressure Sensor
+    //
+    /*
+    pressNum1.updatePressTemp();
+    pressNum1.fillEASpack(curPack[pack_i++]);
+    */
     
     //
     // Read from ADXL345 Num 1
@@ -273,15 +256,10 @@ int main(int argc, char* argv[])
     //
     accelNum2.updateAccelData();
     accelNum2.fillEASpack(curPack[pack_i++]);
-
     
-        //
-    // HSC Pressure Sensor
-    //
-    /*
-    pressNum1.updatePressTemp();
-    pressNum1.fillEASpack(curPack[pack_i++]);
-    */
+    
+    humPress1.updateHumidPressTemp();
+    humPress1.fillEASpack(curPack[pack_i++]);
     
     //
     // Read from MPU6050 Num 3

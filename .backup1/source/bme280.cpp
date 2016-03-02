@@ -18,7 +18,6 @@ Brian Davis
 
 #include <iostream>
 #include <cstring>
-#include <fstream>
 
 #include "bme280.h"
 
@@ -144,14 +143,3 @@ EasDAQpack* BME280::fillEASpack(EasDAQpack &fillPack)
   return &fillPack;
 }
 
-int BME280::logPartASensorID(std::ofstream & ofile, std::string sen_name)
-{
-  ofile << "Sensor unique ID : " << std::hex << (int)uniqueID << std::endl;
-  ofile << "Sensor type : BME280 Temperature Humidity Pressure Sensor" << std::endl;
-  ofile << "Sensor bus : /dev/i2c-" << i2cBus << std::endl;
-  ofile << "I2C Address : " << (int) i2cAddress << std::endl;
-  ofile << "Sensor name / Placement : " << sen_name << std::endl;
-  ofile << "-----" << std::endl;
-
-  return 0;
-}

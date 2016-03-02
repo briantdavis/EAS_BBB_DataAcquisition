@@ -34,14 +34,14 @@
 
 #define MG_PER_LSB    (3.90)
 
-// #define MAX_BUS 				64
+#define MAX_BUS 				64
 
 class ADXL345Accelerometer {
 
 private:
 	int i2cBus, i2cAddress, i2cHandle;
   uint8_t uniqueID;
-	// char namebuf[MAX_BUS];
+	char namebuf[MAX_BUS];
 
 	// signed int accelerationX, accelerationY, accelerationZ;
 	// signed int roll,pitch;
@@ -76,8 +76,6 @@ public:
   // Utility Fn
 
   EasDAQpack* fillEASpack(EasDAQpack &);
-  int logPartASensorID(std::ofstream &, std::string);
-  
 };
 
 #endif /* ADXL345ACCELEROMETER_H_ */

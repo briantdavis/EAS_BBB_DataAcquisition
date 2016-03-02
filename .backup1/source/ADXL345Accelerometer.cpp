@@ -23,10 +23,8 @@
 #include <sys/ioctl.h>
 #include <stropts.h>
 #include <stdio.h>
-#include <math.h>
-
 #include <iostream>
-#include <fstream>
+#include <math.h>
 
 #include "ADXL345Accelerometer.h"
 
@@ -59,8 +57,7 @@ ADXL345Accelerometer::ADXL345Accelerometer(int busID, int deviceAddress, uint8_t
 //
 int ADXL345Accelerometer::initAccelerometer()
 {
-#define MAX_STR 40
-	char namebuf[MAX_STR];
+	char namebuf[MAX_BUS];
 	snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", i2cBus);
 
 	//Create a file descriptor for the I2C bus
@@ -200,19 +197,6 @@ EasDAQpack* ADXL345Accelerometer::fillEASpack(EasDAQpack &fillPack)
   fillPack.u.threeAxis_ss16.z = rawData_Z;
   // fillPack.u_sensor_id = uniqueID;
   return &fillPack;
-}
-
-int ADXL345Accelerometer::logPartASensorID(std::ofstream & ofile, std::string sen_name)
-{
-  ofile << "Sensor unique ID : " << (int) uniqueID << std::endl;
-  ofile << "Sensor type : ADXL345 three-Axis accelerometer " << std::endl;
-  ofile << "Sensor bus : /dev/i2c-" << i2cBus << std::endl;
-  // ofile << "Sensor bus : " << namebuf << std::endl;
-  ofile << "I2C Address : " << std::hex << i2cAddress << std::endl;
-  ofile << "Sensor name / Placement : " << sen_name << std::endl;
-  ofile << "-----" << std::endl;
-
-  return 0;
 }
 
 // @@@ TODO

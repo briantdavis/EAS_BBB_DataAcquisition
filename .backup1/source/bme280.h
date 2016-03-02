@@ -147,10 +147,9 @@ typedef struct _compParams_ts {
     int init_device();
     int updateHumidPressTemp();
     
-  //
+    //
   // Utility Fn
   EasDAQpack* fillEASpack(EasDAQpack &);
-  int logPartASensorID(std::ofstream &, std::string);
                       
                   
 }; // end class
