@@ -1,0 +1,6 @@
+#
+# To prevent Merge / Diff on Eagle files
+#
+
+*.sch binary
+*.brd binary
