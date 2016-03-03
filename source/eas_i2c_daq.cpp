@@ -226,9 +226,12 @@ int main(int argc, char* argv[])
     std::cout << std::endl << "TinyCom thread ShutDown."<< std::endl;
     return 0;
   }
-
-
-
+  
+  //
+  // @@@ TODO:
+  // Read Cal Data from all Sensors & Write to Log-File
+  // 
+  // located HERE!
 
   //
   // Begin Repeated DAQ Loop
