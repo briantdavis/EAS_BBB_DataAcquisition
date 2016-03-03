@@ -129,10 +129,11 @@ int main(int argc, char* argv[])
   
   ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR, ++sv->gNextUniqueID);
   ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR, ++sv->gNextUniqueID);
+  HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR, ++sv->gNextUniqueID);
   
   // MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
   /*  
-  HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR);
+  
   ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR);
   i2cMuxNum1.selectChan(PCA9544Mux :: CH_2);
   ADXL345Accelerometer accelNum4(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR);
@@ -185,9 +186,7 @@ int main(int argc, char* argv[])
   i2cMuxNum1.logPartASensorID(logFileStream);
   accelNum1.logPartASensorID(logFileStream, "On Proto RH Orientation");
   accelNum2.logPartASensorID(logFileStream, "On Proto LH Orientation");
-  
-  
-  
+  pressNum1.logPartASensorID(logFileStream, "On Proto - atmospheric differential");
   
   //
   // @@@ TODO:
@@ -271,21 +270,18 @@ int main(int argc, char* argv[])
     accelNum1.updateAccelData();
     accelNum1.fillEASpack(curPack[pack_i++]);
     
-        //
+    //
     // Read from ADXL345 Num 1
     //
     accelNum2.updateAccelData();
     accelNum2.fillEASpack(curPack[pack_i++]);
-
     
-        //
+    //
     // HSC Pressure Sensor
     //
-    /*
     pressNum1.updatePressTemp();
     pressNum1.fillEASpack(curPack[pack_i++]);
-    */
-    
+
     //
     // Read from MPU6050 Num 3
     //
