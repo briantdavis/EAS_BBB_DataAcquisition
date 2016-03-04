@@ -86,7 +86,9 @@ int HscPress :: updatePressTemp() {
 //
 EasDAQpack* HscPress::fillEASpack(EasDAQpack &fillPack)
 {
+  // fillPack.u_sensor_id = uniqueID;
   fillPack.setID(EasDAQpack::HSC_PRESS_t);
+  fillPack.setUnique(uniqueID);
 
   // TODO
   // Fill Pack
