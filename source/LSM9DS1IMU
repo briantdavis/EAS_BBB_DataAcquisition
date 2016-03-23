@@ -3,7 +3,7 @@
 // Author      : Collin Hudson
 // Version     : 0.1
 // Date        : 3/23/2016
-// Description : SLM9DS1 IMU .h file
+// Description : LSM9DS1 IMU .h file
 //============================================================================
 /*
  *
