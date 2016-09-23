@@ -125,10 +125,15 @@ int main(int argc, char* argv[])
   //
   // I2C TWO
   PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
-  i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+  i2cMuxNum1.selectChan(PCA9544Mux :: CH_0);
   
   ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR, ++sv->gNextUniqueID);
   ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR, ++sv->gNextUniqueID);
+
+  i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+  ADXL345Accelerometer accelNum3(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR, ++sv->gNextUniqueID);
+  HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR, ++sv->gNextUniqueID);
+  
   
   // MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
   /*  
@@ -183,11 +188,10 @@ int main(int argc, char* argv[])
   
   humPress1.logPartASensorID(logFileStream, "On Cape");
   i2cMuxNum1.logPartASensorID(logFileStream);
-  accelNum1.logPartASensorID(logFileStream, "On Proto RH Orientation");
-  accelNum2.logPartASensorID(logFileStream, "On Proto LH Orientation");
-  
-  
-  
+  accelNum1.logPartASensorID(logFileStream, "On Proto (0) RH Orientation");
+  accelNum2.logPartASensorID(logFileStream, "On Proto (0) LH Orientation");
+  accelNum3.logPartASensorID(logFileStream, "On Proto (1)");
+  pressNum1.logPartASensorID(logFileStream, "On Proto (1) atmospheric differential");
   
   //
   // @@@ TODO:
@@ -260,7 +264,7 @@ int main(int argc, char* argv[])
     
     //
     // Select Channel
-    i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+    i2cMuxNum1.selectChan(PCA9544Mux :: CH_0);
     
     //
     // Read from ADXL345 Num 1
@@ -268,20 +272,27 @@ int main(int argc, char* argv[])
     accelNum1.updateAccelData();
     accelNum1.fillEASpack(curPack[pack_i++]);
     
-        //
-    // Read from ADXL345 Num 1
+    //
+    // Read from ADXL345 Num 2
     //
     accelNum2.updateAccelData();
     accelNum2.fillEASpack(curPack[pack_i++]);
-
     
         //
+    // Select Channel
+    i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
+    
+    //
     // HSC Pressure Sensor
     //
-    /*
     pressNum1.updatePressTemp();
     pressNum1.fillEASpack(curPack[pack_i++]);
-    */
+
+    //
+    // Read from ADXL345 Num 3
+    //
+    accelNum3.updateAccelData();
+    accelNum3.fillEASpack(curPack[pack_i++]);
     
     //
     // Read from MPU6050 Num 3
