@@ -4,12 +4,14 @@
 # Embry-Riddle Aeronautical University - Prescott Campus
 # B.Davis
 #
-# Here is a simple Make Macro.
-LINK_TARGET = /EAS/bin/eas_daq_alpha.v1.exe
+# Makefile.
 
-# Here is a Make Macro that uses the backslash to extend to multiple lines.
-OBJS =  \
-	eas_i2c_daq.o \
+RP3_TARGET = /EAS/bin/eas_daq_rp3.v2.exe
+
+BBB_TARGET = /EAS/bin/eas_daq_bbb.v2.exe 
+
+# Here is a Make Macro that uses the backslash to extend to multiple lines. 
+COMMON_OBJS =  \
   eas_daq_pack.o \
   bmp180.o \
   bme280.o \
@@ -17,17 +19,24 @@ OBJS =  \
   pca9544mux.o \
   hscPress.o \
   mpu6050AccelGyro.o
+  
+RP3_OBJS = rpi3_eas_daq.o
+
+BBB_OBJS = bbb_eas_daq.o
 
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
 # Macro Expansions are introduced with $ and enclosed in (parentheses).
-REBUILDABLES = $(OBJS) $(LINK_TARGET)
+REBUILDABLES = $(COMMON_OBJS) $(RP3_OBJS) $(BBB_OBJS) $(LINK_TARGET)
 
 # The rule for "all" is used to incrementally build your system.
 # It does this by expressing a dependency on the results of that system,
 # which in turn have their own rules and dependencies.
-all : $(LINK_TARGET)
+all : $(BBB_TARGET)
 	echo All done
+
+#rp : $(RP3_TARGET)
+#  echo RP done
 
 # Here is a simple Rule (used for "cleaning" your build environment).
 # It has a Target named "clean" (left of the colon ":" on the first line),
@@ -51,7 +60,14 @@ clean :
 # $@ expands to the rule's target, in this case "test_me.exe".
 # $^ expands to the rule's dependencies, in this case the three files
 # main.o, test1.o, and  test2.o.
-$(LINK_TARGET) : $(OBJS) ./libs/tc/tinycon.o
+$(RP3_TARGET) : $(COMMON_OBJS) $(RP3_OBJS) ./libs/tc/tinycon.o
+	g++ -g -Wall -lrt -o $@ $^
+
+# Here is a Rule that uses some built-in Make Macros in its command:
+# $@ expands to the rule's target, in this case "test_me.exe".
+# $^ expands to the rule's dependencies, in this case the three files
+# main.o, test1.o, and  test2.o.
+$(BBB_TARGET) : $(COMMON_OBJS) $(BBB_OBJS) ./libs/tc/tinycon.o
 	g++ -g -Wall -lrt -o $@ $^
 
 #
@@ -77,5 +93,4 @@ $(LINK_TARGET) : $(OBJS) ./libs/tc/tinycon.o
 # (in this case, by the Pattern Rule above).
 # Dependency Rules are often used to capture header file dependencies.
 baro_first.o : bmp180.h
-
 
