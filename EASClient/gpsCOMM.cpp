@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <fstream>
+#include <string>
 
 class CharacterBuffer{
   public:
@@ -268,14 +269,53 @@ int poll(){
   }
   return SAFE;
 }
-/*
-struct nmea_data{
-	std::string
-}
 
-int parse(std::vector<>){
-	
-}*/
+struct nmea_data{
+	std::string nmea_tag, *identifier, *value;
+	int items;
+
+	nmea_data(std::string data){
+		items = 0;
+
+		for(unsigned int i = 0;i < data.length();i++){
+			if(data.at(i) == ','){
+				items++;
+			}
+		}
+
+		value = new std::string[items];
+		identifier = new std::string[items];
+
+    unsigned int previousFilterCharacter = 0 , currentCharacter = 1, iteration = 0;
+    
+    bool titleRetrieved = false;
+    for(;currentCharacter < data.length() ; currentCharacter++){
+      if(data.at(currentCharacter) == ','){
+        if(!titleRetrieved){
+          nmea_tag = data.substr(previousFilterCharacter + 1 , currentCharacter - previousFilterCharacter - 1);
+          previousFilterCharacter = currentCharacter;
+          titleRetrieved = true;
+        }
+        else{
+        value[iteration++] = data.substr(previousFilterCharacter + 1 , currentCharacter - previousFilterCharacter - 1);
+        previousFilterCharacter = currentCharacter;
+        }
+      }
+      else if(currentCharacter == data.length() - 1){
+        value[iteration++] = data.substr(previousFilterCharacter + 1 , currentCharacter - previousFilterCharacter);
+      }
+      
+    }
+	}
+};
+
+void printA(nmea_data *input){
+  printf("%s\n{",(input->nmea_tag).c_str());
+  for(int i = 0; i < input->items;i++){
+    printf("%s: %s\n",(input->identifier[i]).c_str(),(input->value[i]).c_str());
+  }
+  printf("}\n\n");
+}
 
 int main(){
   /*struct CharachterBuffer test;
@@ -335,23 +375,45 @@ int main(){
   //printf(gpsBuffer.buffer);
   
   std::string gather="";
+
   getNMEAstr(&gather);
+  struct nmea_data *gathered_data = new nmea_data(gather);
   printf("%s\n",gather.c_str());
+  printA(gathered_data);
+
+
+
   gather = "";
   getNMEAstr(&gather);
+  gathered_data = new nmea_data(gather);
   printf("%s\n",gather.c_str());
+  printA(gathered_data);
+  
   gather = "";
   getNMEAstr(&gather);
+  gathered_data = new nmea_data(gather);
   printf("%s\n",gather.c_str());
+  printA(gathered_data);
+  
   gather = "";
   getNMEAstr(&gather);
+  gathered_data = new nmea_data(gather);
   printf("%s\n",gather.c_str());
+  printA(gathered_data);
+  
   gather = "";
   getNMEAstr(&gather);
+  gathered_data = new nmea_data(gather);
   printf("%s\n",gather.c_str());
+  printA(gathered_data);
+  
   gather = "";
   getNMEAstr(&gather);
+  gathered_data = new nmea_data(gather);
   printf("%s\n",gather.c_str());
+  printA(gathered_data);
+  
+  
   gather = "";
   
   /*setup();
