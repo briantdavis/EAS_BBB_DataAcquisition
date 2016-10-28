@@ -9,6 +9,8 @@
 //       http://www.embeddedadventures.com/bme280_weather_multi_sensor_mod-1022.html
 //       https://github.com/embeddedadventures/BME280
 //
+//       https://github.com/BoschSensortec/BME280_driver/blob/master/bme280.c
+//
 //
 
 #ifndef BME280_H_
@@ -25,16 +27,16 @@
 //
 // Sensor Constants
 //
-#define BME280_SDO_L_ADDR  0x76
-#define BME280_SDO_H_ADDR  0x77
+#define BME280_SDO_L_ADDR        0x76
+#define BME280_SDO_H_ADDR        0x77
 
 // Register Addresses
-#define BME280_RA_PRESS_MSB  0xF7
+#define BME280_RA_PRESS_MSB      0xF7
 
 // register defines
 
-#define regCalibStart     0x88
-#define regChipID         0xd0
+#define regCalibStart            0x88
+#define regChipID                0xd0
 #define regReset          0xe0
 #define regCalibStart2    0xe1
 #define regCtrlHum        0xf2
@@ -121,6 +123,12 @@ typedef struct _compParams_ts {
   
 } compParams_ts;
 
+union compParams_u
+{
+   uint8_t        compArray[24+9];
+   compParams_ts  compStruct;
+};
+
   //
   // Class member data
   //
@@ -151,7 +159,7 @@ typedef struct _compParams_ts {
   // Utility Fn
   EasDAQpack* fillEASpack(EasDAQpack &);
   int logPartASensorID(std::ofstream &, std::string);
-                      
+  int logPartBSensorCal(std::ofstream & ofile);                      
                   
 }; // end class
 

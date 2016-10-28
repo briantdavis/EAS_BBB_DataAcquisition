@@ -12,7 +12,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-// #include <unistd.h>  Old Ansi C / linux threads
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -120,15 +119,15 @@ int main(int argc, char* argv[])
   
   // I2C ONE
   //  bmp180 baroSen(I2C_HW1_BUS_NUM, ++sv->gNextUniqueID);
-  //  BME280 humPress1(I2C_HW1_BUS_NUM, BME280_SDO_L_ADDR, ++sv->gNextUniqueID);
+  BME280 humPress1(I2C_HW1_BUS_NUM, BME280_SDO_L_ADDR, ++sv->gNextUniqueID);
 
   //
   // I2C TWO
   PCA9544Mux i2cMuxNum1(I2C_HW2_BUS_NUM, PCA9544_000_ADDR);
   i2cMuxNum1.selectChan(PCA9544Mux :: CH_3);
   
-  ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR, ++sv->gNextUniqueID);
-  ADXL345Accelerometer accelNum2(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR, ++sv->gNextUniqueID);
+  // ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_L_ADDR, ++sv->gNextUniqueID);
+  ADXL345Accelerometer accelNum1(I2C_HW2_BUS_NUM, ADXL345_SDO_H_ADDR, ++sv->gNextUniqueID);
   HscPress pressNum1(I2C_HW2_BUS_NUM, HSC_PN2_ADDR, ++sv->gNextUniqueID);
   
   // MPU6050AccelGyro accGyrNum3(I2C_HW2_BUS_NUM, MPU6050_AD0_L_ADDR);
@@ -177,34 +176,47 @@ int main(int argc, char* argv[])
 
   //
   // @@@ TODO:
-  // Autodetect I2C sensors
   // Read Config file for installed non-I2C sensors
+
+  
+  
+  //
+  // LogFile Part (A)
   // Write insalled sensors list to Log-File
   // located HERE!
+  // Future Work : Autodetect I2C sensors
   
-  // humPress1.logPartASensorID(logFileStream, "On Cape");
+  humPress1.logPartASensorID(logFileStream, "On Cape");
   i2cMuxNum1.logPartASensorID(logFileStream);
   accelNum1.logPartASensorID(logFileStream, "On Proto RH Orientation");
-  accelNum2.logPartASensorID(logFileStream, "On Proto LH Orientation");
-  pressNum1.logPartASensorID(logFileStream, "On Proto - atmospheric differential");
+  // accelNum2.logPartASensorID(logFileStream, "On Proto LH Orientation");
+  pressNum1.logPartASensorID(logFileStream, "On Proto - atmospheric absolute");
   
+  //
+  // LogFile Part (B)
   //
   // @@@ TODO:
   // Read Cal Data from all Sensors & Write to Log-File
   // located HERE!
-
-
-
-
-  // logFileStream.seekp(2048);
+  //
+ 
+  // humPress1.logPartBSensorCal(logFileStream);
   
-  while (logFileStream.tellp() < 0x800)
+  //
+  // Advance LogFile to known aligned start location
+  //
   {
-    char buf[10] = {0};
-    logFileStream.write(buf,1);
+    uint32_t start_loc = 0x400;
+    while (logFileStream.tellp() > start_loc)
+    {
+      start_loc = start_loc * 2;
+    }
+    while (logFileStream.tellp() < start_loc)
+    {
+      char buf[4] = {0};
+      logFileStream.write(buf,1);
+    }
   }
-  
-  
   if (!logFileStream.good())
   {
      std::cout << std::endl << "LogFile Seek() error."<< std::endl;
@@ -227,11 +239,7 @@ int main(int argc, char* argv[])
   }
   
   //
-  // @@@ TODO:
-  // Read Cal Data from all Sensors & Write to Log-File
-  // 
-  // located HERE!
-
+  // LogFile Part (C)
   //
   // Begin Repeated DAQ Loop
   // This will later be MULTI-Threaded
@@ -251,7 +259,7 @@ int main(int argc, char* argv[])
     clock_gettime(CLOCK_REALTIME, &t_p);
     curPack[pack_i++].setClockDual(t_c, t_p, timeStamp_UID);
     
-    /*
+    
     if (frc % 5 == 0)
     {    
      //
@@ -260,7 +268,7 @@ int main(int argc, char* argv[])
       humPress1.updateHumidPressTemp();
       humPress1.fillEASpack(curPack[pack_i++]);
     }
-    */
+    
     
     //
     // Select Channel
@@ -275,8 +283,8 @@ int main(int argc, char* argv[])
     //
     // Read from ADXL345 Num 1
     //
-    accelNum2.updateAccelData();
-    accelNum2.fillEASpack(curPack[pack_i++]);
+    //accelNum2.updateAccelData();
+    //accelNum2.fillEASpack(curPack[pack_i++]);
     
     //
     // HSC Pressure Sensor
