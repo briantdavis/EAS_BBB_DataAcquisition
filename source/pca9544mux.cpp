@@ -14,10 +14,13 @@
 // Includes
 //
 
+#include <errno.h>
+#include <unistd.h>
 #include <fcntl.h>
 
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
+
 #include <sys/ioctl.h>
 
 #include <iostream>

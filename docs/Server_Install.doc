@@ -1,0 +1,9 @@
+After installing debian on the server....
+Run:
+  apt-get update
+  apt-get upgrade
+  apt-get install ntp
+  apt-get install isc_dhcp_server
+  apt-get install git
+  git clone <REPOSITORY> /EAS
+  cp -r /EAS/EASServer/* /
