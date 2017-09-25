@@ -1,0 +1,124 @@
+#include "CharacterBuffer.hpp"
+#include <iostream>
+
+int main()
+{
+	CharacterBuffer::CharacterBuffer c(8);
+	char x;
+	int bufferStatus = CharacterBuffer::BUFFER_SAFE;
+  std::cout << "passed init" << std::endl;
+  std::cout << "\t" << c.str() << std::endl;
+	std::cout << "\t" << c.loc() << std::endl;
+	
+	bufferStatus = c.peek(x);
+	if(bufferStatus == CharacterBuffer::BUFFER_UNDERFLOW)
+	{
+		std::cout << "Peek underflow test passed!" << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: Peek underflow test failed!" << std::endl;
+		std::cout << "\t" << c.str() << std::endl;
+		std::cout << "\t" << c.loc() << std::endl;
+	}
+	
+	
+	
+	bufferStatus = c.pull(x);
+	if(bufferStatus == CharacterBuffer::BUFFER_UNDERFLOW)
+	{
+		std::cout << "Pull underflow test passed!" << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: Pull underflow test failed!" << std::endl;
+		std::cout << "\t" << c.str() << std::endl;
+		std::cout << "\t" << c.loc() << std::endl;
+	}
+	
+	
+	
+	bufferStatus = c.push('h');
+	if(bufferStatus == CharacterBuffer::BUFFER_SAFE)
+	{
+		std::cout << "Push underflow test passed!" << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: Push underflow test failed!" << std::endl;
+		std::cout << "\t" << c.str() << std::endl;
+		std::cout << "\t" << c.loc() << std::endl;
+	}
+	
+	bufferStatus = c.push('e');
+	bufferStatus = c.push('l');
+	bufferStatus = c.push('l');
+	bufferStatus = c.push('o');
+	bufferStatus = c.push('!');
+	bufferStatus = c.push('?');
+	bufferStatus = c.push('.');
+	if(bufferStatus == CharacterBuffer::BUFFER_OVERFLOW_IMMINENT)
+	{
+		std::cout << "Push overflow imminent test passed!" << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: Push overflow imminent test failed!" << std::endl;
+		std::cout << "\t" << c.str() << std::endl;
+		std::cout << "\t" << c.loc() << std::endl;
+	}
+	
+	
+	
+	bufferStatus = c.push('H');
+	if(bufferStatus == CharacterBuffer::BUFFER_OVERFLOW)
+	{
+		std::cout << "Push overflow test passed!" << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: Push overflow test failed!" << std::endl;
+		std::cout << "\t" << c.str() << std::endl;
+		std::cout << "\t" << c.loc() << std::endl;
+	}
+ 
+ 
+ 
+  std::string k;
+  bufferStatus = c.readFromUntil(k,'h','.');
+  if(k == "hello!?")
+  {
+	  std::cout << "ReadFromUntil test passed!" << std::endl;
+    c.trash();
+	}
+	else
+	{
+		std::cout << "ERROR: ReadFromUntil test failed!" << std::endl;
+    std::cout << "\t" << k << std::endl;
+		std::cout << "\t" << c.str() << std::endl;
+		std::cout << "\t" << c.loc() << std::endl;
+	}
+	
+	
+	c.pushOver('K');
+	c.pushOver('$');
+	c.pushOver('H');
+	c.pushOver('e');
+	c.pushOver('l');
+	c.pushOver('l');
+	c.pushOver('o');
+	c.pushOver('$');
+	c.pushOver('$');// $$Hello$
+  bufferStatus = c.readBetween(k,'$');
+  if(k == "$Hello")
+  {
+	  std::cout << "ReadBetween test passed!" << std::endl;
+	}
+	else
+	{
+		std::cout << "ERROR: ReadBetween test failed!" << std::endl;
+    std::cout << "\t" << k << std::endl;
+		std::cout << "\t" << c.str() << std::endl;
+		std::cout << "\t" << c.loc() << std::endl;
+	}
+}
