@@ -11,6 +11,5 @@ PCA9544 - I2C Mux<br>
 ADXL345 - I2C 3-axis Accelerometer<br>
 BME280  - I2C Pressure, Humidity & Temperature<br>
 MPU6050 - I2C 3-axis Accelerometer & 3-axis Gyro<br>
-hscPress- Honeywell I2C HSC & SSC Pressure<br>
-...
+hscPress- AMSYS AMS59xx series pressure sensors<br>
 
