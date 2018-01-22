@@ -125,10 +125,11 @@ typedef struct _compParams_ts {
   // Class member data
   //
 
-    private:
+  private:
     int i2cBus;       // processor bus #
     int i2cAddress;   // i2c bus addres (7-bit)
     int i2cHandle;    // Handle returned from open()
+    uint8_t uniqueID;
     int opResult;
     
     uint32_t rawPress;
@@ -140,15 +141,16 @@ typedef struct _compParams_ts {
   void blank();
   
     public:
-    BME280(int, int);
+    BME280(int, int, uint8_t = 0xFF);
     virtual ~BME280();
     
     int init_device();
     int updateHumidPressTemp();
     
-    //
+  //
   // Utility Fn
   EasDAQpack* fillEASpack(EasDAQpack &);
+  int logPartASensorID(std::ofstream &, std::string);
                       
                   
 }; // end class

@@ -48,6 +48,12 @@ int EasDAQpack :: setID(easDAQpackId_t id)
   return 0;
 }
 //-------------------------------------------------
+int EasDAQpack :: setUnique(uint8_t uniqueID_in)
+{
+  u_sensor_id = uniqueID_in;
+  return 0;
+}
+//-------------------------------------------------
 int EasDAQpack :: setClockT(clock_t clk)
 {
   pack_id = EasDAQpack :: CLOCK_T;
@@ -55,11 +61,12 @@ int EasDAQpack :: setClockT(clock_t clk)
   return 0;
 }
 //-------------------------------------------------
-int EasDAQpack :: setClockDual(clock_t crs, struct timespec pres)
+int EasDAQpack :: setClockDual(clock_t crs, struct timespec pres, uint8_t uniqueID_in)
 {
   pack_id = EasDAQpack :: DUAL_CLOCK_t;
   u.time.course = crs;
   u.time.ns = pres;
+  u_sensor_id = uniqueID_in;
   // @@@@ Working here TODO @@@@
   // u.clk_t = clk;
   return 0;

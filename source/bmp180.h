@@ -64,7 +64,12 @@ Druck wird in Pascale=Pa berechnet.
 
 class bmp180
 {
-  private:  
+  private:
+    // EAS content
+    int i2cBusPtr;
+    uint8_t UniqueID;    
+    
+    // From Bosch content  
     int16_t ac1,ac2,ac3,b1,b2,mb,mc,md;
     uint16_t ac4,ac5,ac6;
     uint8_t oss;
@@ -72,13 +77,13 @@ class bmp180
     uint16_t rawTemp;
     uint16_t rawPress;
     
-    int i2cBusPtr;
+
     
     uint16_t updateRawTemp();
     uint32_t updateRawPress();
   
   public:
-    bmp180(int);
+    bmp180(int, uint8_t = 0xFF);
     // From Buffered Values
     int32_t readPressure();
     float readTemp();

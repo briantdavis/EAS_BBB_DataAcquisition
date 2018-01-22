@@ -4,6 +4,15 @@
 // Brian Davis
 //
 
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
+
+#include <sys/ioctl.h>
+
 #include "mpu6050AccelGyro.h"
 #include "eas_daq_pack.h"
 

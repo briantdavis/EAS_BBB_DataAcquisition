@@ -36,6 +36,8 @@ public:
   void blank();
   int selectChan(muxChan_t);
   
+  int logPartASensorID(std::ofstream &);
+  
 };
 
 #endif

@@ -1,0 +1,9 @@
+After installing debian on the client....
+Run:
+  apt-get update
+  apt-get upgrade
+  apt-get install ntp
+  apt-get install git
+  git clone <REPOSITORY> /EAS
+  cp -r /EAS/EASClient/* /
+    [NOTE: You will need to apply the start-up script, to be added...]

@@ -38,6 +38,7 @@ class HscPress {
     int i2cBus;       // processor bus #
     int i2cAddress;   // i2c bus addres (7-bit)
     int i2cHandle;    // Handle returned from open()
+    uint8_t uniqueID;
     int opResult;
   
     uint8_t status;             // 2 bit
@@ -81,16 +82,16 @@ class HscPress {
 //                   const uint16_t output_min, const uint16_t output_max, const float pressure_min,
 //                   const float pressure_max);
   public:
-    HscPress(int, int);
+    HscPress(int, int, uint8_t = 0xFF);
     virtual ~HscPress();
     
     int init_device();
     int updatePressTemp();
     
-    //
+  //
   // Utility Fn
   EasDAQpack* fillEASpack(EasDAQpack &);
-                      
+  int logPartASensorID(std::ofstream &, std::string);                      
                   
 }; // close class
 

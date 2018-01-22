@@ -1,0 +1,16 @@
+
+In the EAS / BBB installation, we will want to set the BBB CPU freq to full performance prior to data collection.
+
+The following commands can be used to set CPU frequency
+
+root@beaglebone:~# cpufreq-set -g userspace
+
+  The command above will set the CPU frequency to be under USER control.
+
+root@beaglebone:~# cpufreq-set -f 1GHz
+
+  Will set the CPU frequency to be 1GHz (maximum for BBB rev C)
+  
+root@beaglebone:~# cpufreq-info
+
+  Can be used to examine settings and confirm CPU is in desired operational mode.

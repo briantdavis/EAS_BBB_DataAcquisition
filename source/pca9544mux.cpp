@@ -14,14 +14,18 @@
 // Includes
 //
 
+#include <errno.h>
+#include <unistd.h>
 #include <fcntl.h>
 
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
+
 #include <sys/ioctl.h>
 
 #include <iostream>
 #include <cstring>
+#include <fstream>
 
 #include "pca9544mux.h"
 
@@ -96,4 +100,15 @@ int PCA9544Mux :: selectChan(muxChan new_chan)
 //
 PCA9544Mux::~PCA9544Mux() {
 	// TODO Auto-generated destructor stub
+}
+
+int PCA9544Mux::logPartASensorID(std::ofstream & ofile)
+{
+  // ofile << "Sensor unique ID : " << uniqueID << std::endl;
+  ofile << "Device type : PCA9544 I2C 4-way Mux " << std::endl;
+  ofile << "Device bus : /dev/i2c-" << i2cBus << std::endl;
+  ofile << "I2C Address : " << std::hex << i2cAddress << std::endl;
+  ofile << "-----" << std::endl;
+
+  return 0;
 }
