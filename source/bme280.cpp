@@ -251,7 +251,7 @@ int BME280::logPartBSensorCal(std::ofstream & ofile)
   //
   // Write Cal data to ofile
   //
-  ofile << "Sensor ID [" << std::hex << (int)uniqueID << "] Calibration Data ||" ;
+  ofile << "Sensor ID [" << std::hex << (int)uniqueID << "] Calibration Data :" ;
   {
     // uint8_t *ptr = (void *) cal_data;
     for (unsigned int i = 0 ; i < sizeof(cal_data) ; i++)
@@ -259,8 +259,8 @@ int BME280::logPartBSensorCal(std::ofstream & ofile)
       ofile << std::hex << std::setfill('0') << std::setw(2) << (int)cal_data.compArray[i];
     }
   }
-  ofile << "||" << std::endl ;
     
+  ofile << std::endl ;
   // ofile << "||" << std::endl << "-----" << std::endl;
  
   return 0;
