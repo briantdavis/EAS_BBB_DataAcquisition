@@ -29,3 +29,6 @@
 
 # EAS Specific
 *.log
+*.s#1
+*.b#1
+*.pro
