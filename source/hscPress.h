@@ -87,6 +87,9 @@ class HscPress {
     
     int init_device();
     int updatePressTemp();
+    uint8_t getStatus();
+    uint16_t getBridgeData();
+    uint16_t getTemperatureData();
     
   //
   // Utility Fn
