@@ -8,7 +8,9 @@
 
 RP3_TARGET = /EAS/bin/eas_daq_rp3.v2.exe
 
-BBB_TARGET = /EAS/bin/eas_daq_bbb.v2.exe 
+BBB_TARGET = /EAS/bin/eas_daq_bbb.v2.exe
+
+PAN_TARGET = /EAS/bin/misc/pan_flute.exe 
 
 # Here is a Make Macro that uses the backslash to extend to multiple lines. 
 COMMON_OBJS =  \
@@ -24,6 +26,8 @@ RP3_OBJS = rpi3_eas_daq.o
 
 BBB_OBJS = bbb_eas_daq.o
 
+PAN_OBJS = pan_flute.o
+
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
 # Macro Expansions are introduced with $ and enclosed in (parentheses).
@@ -37,6 +41,9 @@ all : $(BBB_TARGET)
 
 #rp : $(RP3_TARGET)
 #  echo RP done
+
+pan_flute : $(PAN_TARGET)
+	echo pan_flute done
 
 # Here is a simple Rule (used for "cleaning" your build environment).
 # It has a Target named "clean" (left of the colon ":" on the first line),
@@ -70,6 +77,13 @@ $(RP3_TARGET) : $(COMMON_OBJS) $(RP3_OBJS) ./libs/tc/tinycon.o
 $(BBB_TARGET) : $(COMMON_OBJS) $(BBB_OBJS) ./libs/tc/tinycon.o
 	g++ -g -Wall -lrt -o $@ $^
 
+# Here is a Rule that uses some built-in Make Macros in its command:
+# $@ expands to the rule's target, in this case "test_me.exe".
+# $^ expands to the rule's dependencies, in this case the three files
+# main.o, test1.o, and  test2.o.
+$(PAN_TARGET) : $(COMMON_OBJS) $(PAN_OBJS) ./libs/tc/tinycon.o
+	g++ -g -Wall -lrt -o $@ $^
+	
 #
 # Specific Rules
 #./libs/tc/tinycon.o : ./libs/tc/tinycon.cpp
