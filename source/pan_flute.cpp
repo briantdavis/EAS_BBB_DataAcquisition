@@ -51,6 +51,7 @@
 #define I2C_HW1_BUS_NUM    2
 #define I2C_HW2_BUS_NUM    1
 
+// Notes to play. {ab2 = 103.826, c3 = 130.813, eb3 = 155.563, g3 = 195.998, c4 = 261.626, eb4 = 311.127}.
 int main(){
 	
 	using namespace std;
@@ -70,9 +71,8 @@ int main(){
   timeStamp_UID = (++sv->gNextUniqueID);
 	
   uint16_t basePress[6] = {0};
-  bool isActive[6] = {false};
   int addr[6] = {0x28, 0x29, 0x33, 0x34, 0x35, 0x36};          //<<<<<The I2C address of the slave
-  
+  float notes[6] = {103.862, 130.813, 155.563, 195.998, 261.626, 311.127};
   
   HscPress press[6] = {HscPress(I2C_HW2_BUS_NUM, addr[0], ++sv->gNextUniqueID),
                        HscPress(I2C_HW2_BUS_NUM, addr[1], ++sv->gNextUniqueID),
@@ -90,6 +90,25 @@ int main(){
   
   while(true)
   {
-  
+    int sensorMax = 0;
+    int sensorNum = -1;
+
+    for(int i = 0; i < 6; i++)
+    {
+      press[i].updatePressTemp();
+      int currPress = press[i].getBridgeData;
+      int currBasePress = basePress[i];
+      if(currPress > (currBasePress + 50))
+      {
+        int pressDiff = currPress - currBasePress;
+        if(pressDiff > sensorMax){
+          sensorMax = pressDiff;
+          sensorNum = i;
+        }
+      }
+    }
+
+    
+
   }
 }
